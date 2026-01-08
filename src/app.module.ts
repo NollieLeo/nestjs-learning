@@ -3,6 +3,7 @@ import { RangeModule } from './range/range.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import * as dotenv from 'dotenv';
+import * as Joi from 'joi';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -12,6 +13,12 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
       isGlobal: true,
       envFilePath,
       load: [() => dotenv.config({ path: '.env' })],
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.valid()
+          .valid('development', 'production')
+          .default('development'),
+        DB_PROT: Joi.number().default(3306),
+      }),
     }),
     UserModule,
     RangeModule,
