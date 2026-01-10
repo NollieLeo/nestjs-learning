@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  # 给服务起个名字，这里叫 db
+  db:
+    image: mysql # 使用 MySQL 最新 版本的镜像
+    container_name: db-container # (可选) 给容器起个固定的名字，方便后续查看
+    restart: always # 如果容器崩溃或电脑重启，它会自动尝试重启
+
+    environment:
+      MYSQL_ROOT_PASSWORD: shyh24331028... # 设置 root 用户的密码 (请修改为你想要的)
+      MYSQL_DATABASE: my_database # (可选) 启动时自动创建一个叫 my_database 的空库
+      TZ: Asia/Shanghai # (可选) 设置时区为上海，方便查看日志时间
+
+    # 端口映射: 左边是Mac的端口 : 右边是容器内部的端口
+    ports:
+      - '3090:3306'
+
+    # 数据持久化 (非常重要！)
+    # 如果不写这个，当你删除容器时，数据库里的数据就会丢失
+    volumes:
+      - mysql_data:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8090:8080'
+    # 让 Adminer 也能连到 db 的网络 (默认都在同一个网络，不写也可以，但写上更清晰)
+    depends_on:
+      - db
+
+# 声明上面用到的数据卷
+volumes:
+  mysql_data:
