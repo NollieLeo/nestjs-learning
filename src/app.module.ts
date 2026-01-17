@@ -30,6 +30,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
       }),
     }),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) =>
         ({
@@ -39,8 +40,8 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
           username: configService.get('DB_USERNAME'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_NAME'),
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: configService.get('DB_SYNC'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
         }) as TypeOrmModuleOptions,
     }),
     UserModule,
