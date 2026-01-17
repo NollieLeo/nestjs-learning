@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RangeModule } from './range/range.module';
 import { UserModule } from './user/user.module';
+import { LogsModule } from './logs/logs.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
@@ -47,6 +48,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     }),
     UserModule,
     RangeModule,
+    LogsModule,
   ],
   controllers: [],
   providers: [],
