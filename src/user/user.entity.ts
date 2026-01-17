@@ -6,8 +6,10 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Profile } from './profile.entity';
 
 @Entity()
 export class User {
@@ -30,4 +32,7 @@ export class User {
     inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
   })
   roles: Roles[];
+
+  @OneToOne(() => Profile, (profile) => profile.user)
+  profile: Profile;
 }

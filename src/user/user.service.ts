@@ -63,4 +63,13 @@ export class UserService {
     }
     return this.userRepository.delete(id);
   }
+
+  findUserProfile(id: User['id']) {
+    return this.userRepository.findOne({
+      where: { id },
+      relations: {
+        profile: true,
+      },
+    });
+  }
 }
