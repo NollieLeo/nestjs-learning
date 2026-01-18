@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Post,
   Put,
@@ -17,10 +18,14 @@ import { User } from './user.entity';
  */
 @Controller('user')
 export class UserController {
+  private logger = new Logger(UserController.name);
+
   constructor(
     private readonly userService: UserService,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    this.logger.log('UserController init');
+  }
 
   /**
    * 获取所有用户列表
@@ -28,7 +33,7 @@ export class UserController {
    */
   @Get()
   getUsers() {
-    console.log('DB_PORT', this.configService.get('DB_PORT'));
+    this.logger.log('success to get users');
     return this.userService.findAll();
   }
 
