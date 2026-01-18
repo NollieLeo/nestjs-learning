@@ -1,5 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { RangeService } from './range.service';
+import { Logger } from 'nestjs-pino';
 
 /**
  * 范围控制器
@@ -7,7 +8,12 @@ import { RangeService } from './range.service';
  */
 @Controller('range')
 export class RangeController {
-  constructor(private readonly rangeService: RangeService) {}
+  constructor(
+    private readonly rangeService: RangeService,
+    private readonly loggger: Logger,
+  ) {
+    this.loggger.log('RangeController init');
+  }
 
   /**
    * 获取从 0 到 num-1 的数字数组

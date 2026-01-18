@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Post,
   Put,
@@ -11,6 +10,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { UserService } from './user.service';
 import { User } from './user.entity';
+import { Logger } from 'nestjs-pino';
 
 /**
  * 用户控制器
@@ -18,10 +18,11 @@ import { User } from './user.entity';
  */
 @Controller('user')
 export class UserController {
-  private logger = new Logger(UserController.name);
+  // private logger = new Logger(UserController.name);
 
   constructor(
     private readonly userService: UserService,
+    private readonly logger: Logger,
     private readonly configService: ConfigService,
   ) {
     this.logger.log('UserController init');
@@ -33,7 +34,6 @@ export class UserController {
    */
   @Get()
   getUsers() {
-    this.logger.log('success to get users');
     return this.userService.findAll();
   }
 
