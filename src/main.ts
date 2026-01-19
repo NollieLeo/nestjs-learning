@@ -1,7 +1,7 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from 'nestjs-pino';
-import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { AllExceptionFilter } from './filters/all-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -12,10 +12,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   const logger = app.get(Logger);
+  const httpAdapterHost = app.get(HttpAdapterHost);
 
   app.useLogger(logger);
 
-  app.useGlobalFilters(new HttpExceptionFilter(logger));
+  app.useGlobalFilters(new AllExceptionFilter(logger, httpAdapterHost));
 
   const port = process.env.PORT ?? 3001;
 
