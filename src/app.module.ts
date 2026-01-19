@@ -6,6 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { getDatabaseConfig } from './config/database.config';
+
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
 @Module({
@@ -18,7 +20,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
         NODE_ENV: Joi.valid()
           .valid('development', 'production')
           .default('development'),
-        DB_PORT: Joi.number().default(3090),
+        DB_PORT: Joi.number().default(3306),
         DB_SYNC: Joi.boolean().default(false),
         DB_HOST: Joi.string().ip(),
         DB_USERNAME: Joi.string().required(),
@@ -30,20 +32,11 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
       }),
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
-        ({
-          type: configService.get('DB_TYPE'),
-          host: configService.get('DB_HOST'),
-          port: configService.get<number>('DB_PORT'),
-          username: configService.get('DB_USERNAME'),
-          password: configService.get('DB_PASSWORD'),
-          database: configService.get('DB_NAME'),
-          synchronize: configService.get('DB_SYNC'),
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          logging: process.env.NODE_ENV === 'development' ? true : ['error'],
-        }) as TypeOrmModuleOptions,
+      useFactory: (): TypeOrmModuleOptions => ({
+        ...getDatabaseConfig(),
+        autoLoadEntities: true, // 自动加载通过 forFeature 注册的实体
+      }),
     }),
     UserModule,
     RangeModule,
