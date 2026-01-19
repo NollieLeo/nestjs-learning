@@ -6,9 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build:dev": "cross-env NODE_ENV=development nest build",
+    "build:prod": "cross-env NODE_ENV=production nest build --prod",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
     "prestart:dev": "lsof -ti:3001 | xargs kill -9 2>/dev/null || true",
     "start:dev": "cross-env NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
