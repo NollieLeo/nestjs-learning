@@ -6,32 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { LoggerModule } from 'nestjs-pino';
-import { join } from 'path';
-
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
-
-const loggerModule = LoggerModule.forRoot({
-  pinoHttp: {
-    transport:
-      process.env.NODE_ENV === 'development'
-        ? {
-            target: 'pino-pretty',
-            options: {
-              colorize: true,
-            },
-          }
-        : {
-            target: 'pino-roll',
-            options: {
-              file: join('logs', 'log.txt'),
-              frequency: 'daily',
-              size: '10m',
-              mkdir: true,
-            },
-          },
-  },
-});
 
 @Module({
   imports: [
@@ -70,7 +45,6 @@ const loggerModule = LoggerModule.forRoot({
           logging: process.env.NODE_ENV === 'development' ? true : ['error'],
         }) as TypeOrmModuleOptions,
     }),
-    loggerModule,
     UserModule,
     RangeModule,
     LogsModule,
