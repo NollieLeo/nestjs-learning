@@ -36,6 +36,15 @@ export class UserService {
   }
 
   /**
+   * 根据 ID 查询用户
+   * @param id - 用户 ID
+   * @returns 用户信息或 null
+   */
+  findUserById(id: User['id']) {
+    return this.userRepository.findOne({ where: { id } });
+  }
+
+  /**
    * 创建新用户
    * @param user - 用户信息
    * @returns 创建的用户

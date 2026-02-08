@@ -37,6 +37,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get(':id')
+  getUser(@Param('id') id: User['id']) {
+    return this.userService.findUserById(id);
+  }
+
   /**
    * 创建新用户
    * POST /user
