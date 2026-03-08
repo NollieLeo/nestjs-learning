@@ -13,27 +13,42 @@ import {
  */
 @Entity()
 export class Logs {
-  /** 日志 ID（主键，自增） */
+  /**
+   * 日志 ID
+   * @example 1
+   */
   @PrimaryGeneratedColumn()
   id: string;
 
-  /** 请求路径 */
+  /**
+   * 请求路径
+   * @example /api/v1/user
+   */
   @Column()
   path: string;
 
-  /** 请求方法（GET、POST、PUT、DELETE 等） */
+  /**
+   * 请求方法
+   * @example POST
+   */
   @Column()
   method: string;
 
-  /** 请求数据（JSON 字符串） */
+  /**
+   * 请求体（JSON 参数）
+   * @example '{"username":"test"}'
+   */
   @Column()
   data: string;
 
-  /** HTTP 响应状态码（< 400 成功，>= 400 失败） */
+  /**
+   * HTTP 状态码
+   * @example 200
+   */
   @Column()
   result: number;
 
-  /** 操作用户（多对一） */
+  /** 操作用户 */
   @ManyToOne(() => User, (user) => user.logs)
   @JoinColumn({ name: 'user_id' })
   user: User;

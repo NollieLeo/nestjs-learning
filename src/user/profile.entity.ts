@@ -13,23 +13,37 @@ import { User } from './user.entity';
  */
 @Entity()
 export class Profile {
-  /** 资料 ID（主键，自增） */
+  /**
+   * 资料 ID
+   * @example 1
+   */
   @PrimaryGeneratedColumn()
   id: string;
 
-  /** 性别（0: 未知, 1: 男, 2: 女） */
+  /**
+   * 性别 (0: 未知, 1: 男, 2: 女)
+   * @example 1
+   */
   @Column()
   gender: number;
 
-  /** 头像 URL */
+  /**
+   * 头像 URL
+   * @example https://example.com/avatar.png
+   */
   @Column()
   photo: string;
 
-  /** 地址 */
+  /**
+   * 详细地址
+   * @example 浙江省杭州市西湖区
+   */
   @Column()
   address: string;
 
-  /** 关联的用户（一对一） */
+  /**
+   * 关联的用户
+   */
   @OneToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;

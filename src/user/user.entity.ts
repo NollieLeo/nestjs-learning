@@ -26,7 +26,7 @@ export class User {
   username: string;
 
   /** 密码 */
-  @Column()
+  @Column({ select: false })
   password: string;
 
   /** 用户的操作日志（一对多） */

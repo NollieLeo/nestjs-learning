@@ -16,10 +16,9 @@ export class RangeController {
   }
 
   /**
-   * 获取从 0 到 num-1 的数字数组
-   * GET /range?num=10
-   * @param num - 生成的数字个数
-   * @returns 数字数组 [0, 1, 2, ..., num-1]
+   * 获取纯数字列表
+   * 从 0 一直递增到给定的 num-1
+   * @param num 生成的数字最大条目个数
    */
   @Get()
   getRange(@Query('num') num: string): number[] {

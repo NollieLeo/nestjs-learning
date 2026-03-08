@@ -4,12 +4,16 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from './user.service';
-import { User } from './user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserQueryDto } from './dto/user-query.dto';
 import { Logger } from 'nestjs-pino';
 
 /**
@@ -29,60 +33,60 @@ export class UserController {
   }
 
   /**
-   * 获取所有用户列表
-   * GET /user
+   * 获取用户列表（支持分页、排序、搜索）
+   * @param query 查询参数
    */
   @Get()
-  getUsers() {
-    return this.userService.findAll();
+  getUsers(@Query() query: UserQueryDto) {
+    return this.userService.findAll(query);
   }
 
+  /**
+   * 根据ID获取特定用户详细信息
+   * @param id 用户 ID
+   */
   @Get(':id')
-  getUser(@Param('id') id: User['id']) {
+  getUser(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findUserById(id);
   }
 
   /**
    * 创建新用户
-   * POST /user
-   * @param user - 用户信息（用户名、密码）
+   * @param user 用户信息（包含用户名、密码）
    */
   @Post()
-  addUser(@Body() user: Pick<User, 'username' | 'password'>) {
+  addUser(@Body() user: CreateUserDto) {
     return this.userService.create(user);
   }
 
   /**
    * 更新用户信息
-   * PUT /user/:id
-   * @param id - 用户 ID
-   * @param user - 要更新的用户信息
+   * @param id 用户 ID
+   * @param user 要更新的用户部分信息
    */
   @Put(':id')
   updateUser(
-    @Param('id') id: number,
-    @Body() user: Partial<Pick<User, 'username' | 'password'>>,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() user: UpdateUserDto,
   ) {
     return this.userService.update(id, user);
   }
 
   /**
-   * 删除用户
-   * DELETE /user/:id
-   * @param id - 用户 ID
+   * 根据ID删除用户
+   * @param id 用户 ID
    */
   @Delete(':id')
-  deleteUser(@Param('id') id: number) {
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);
   }
 
   /**
-   * 获取用户详情（包含 Profile）
-   * GET /user/:id/profile
-   * @param id - 用户 ID
+   * 获取用户详情（包含关联 Profile 资料表内容）
+   * @param id 用户 ID
    */
   @Get(':id/profile')
-  getUserProfile(@Param('id') id: number) {
+  getUserProfile(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findUserProfile(id);
   }
 }

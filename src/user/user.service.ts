@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
+import { UserQueryDto } from './dto/user-query.dto';
 
 /**
  * 用户服务
@@ -19,11 +20,53 @@ export class UserService {
   ) {}
 
   /**
-   * 查询所有用户
-   * @returns 用户列表
+   * 查询全量或筛选分页用户列表
    */
-  findAll() {
-    return this.userRepository.find();
+  async findAll(query: UserQueryDto = {}) {
+    const {
+      keyword,
+      orderBy = 'id',
+      order = 'DESC',
+      page = 1,
+      limit = 10,
+    } = query;
+
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('user.roles', 'roles');
+
+    if (keyword) {
+      // 尝试将 keyword 转换为数字，以便后续匹配 ID
+      const asNumber = Number(keyword);
+      if (!isNaN(asNumber)) {
+        // 如果能转成数字，则同时匹配 ID 或 用户名
+        queryBuilder.where('(user.username LIKE :keyword OR user.id = :id)', {
+          keyword: `%${keyword}%`,
+          id: asNumber,
+        });
+      } else {
+        // 否则只匹配用户名
+        queryBuilder.where('user.username LIKE :keyword', {
+          keyword: `%${keyword}%`,
+        });
+      }
+    }
+
+    queryBuilder.orderBy(`user.${orderBy}`, order);
+    queryBuilder.skip((page - 1) * limit).take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   /**
@@ -47,7 +90,7 @@ export class UserService {
   /**
    * 创建新用户
    * @param user - 用户信息
-   * @returns 创建的用户
+   * @returns 创建的用户（安全返回）
    * @throws ConflictException 用户名已存在
    */
   async create(user: Partial<Pick<User, 'username' | 'password'>>) {
@@ -58,7 +101,10 @@ export class UserService {
       throw new ConflictException('用户名已存在');
     }
     const newUser = this.userRepository.create(user);
-    return this.userRepository.save(newUser);
+    const savedUser = await this.userRepository.save(newUser);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...safeUser } = savedUser;
+    return safeUser;
   }
 
   /**
@@ -89,6 +135,8 @@ export class UserService {
     }
 
     await this.userRepository.update(id, user);
+
+    // Entity 中默认不查出密码，因此通过 findOne 获取最新关联无需担心密码泄漏
     return this.userRepository.findOne({ where: { id } });
   }
 
