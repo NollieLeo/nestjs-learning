@@ -14,6 +14,14 @@ export class UserQueryDto {
   keyword?: string;
 
   /**
+   * 按角色ID过滤
+   * @example 1
+   */
+  @IsOptional()
+  @IsInt()
+  role?: number;
+
+  /**
    * 排序字段
    * @example id
    */

@@ -8,7 +8,7 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 import { Request, Response } from 'express';
 import { Logger } from 'nestjs-pino';
-import { getClientIp } from 'request-ip';
+import { sendFormattedExceptionResponse } from '../utils/exception-response.util';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
@@ -18,7 +18,6 @@ export class AllExceptionFilter implements ExceptionFilter {
   ) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
-    const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -39,25 +38,11 @@ export class AllExceptionFilter implements ExceptionFilter {
     const errorMessage =
       exception instanceof Error ? exception.message : 'Internal Server Error';
 
-    const clientIp = getClientIp(request);
-
-    const responseBody = {
-      headers: response.getHeaders(),
-      query: request.query,
-      params: request.params,
-      body: request.body as unknown,
+    sendFormattedExceptionResponse(response, request, this.logger, {
       statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      method: request.method,
-      ip: clientIp ?? 'unknown',
       message,
-      exception: exceptionName,
-      error: errorMessage,
-    };
-
-    this.logger.error(message, responseBody);
-
-    httpAdapter.reply(response, responseBody, status);
+      exceptionName,
+      errorMessage,
+    });
   }
 }

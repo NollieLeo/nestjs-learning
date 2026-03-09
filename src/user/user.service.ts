@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -25,6 +21,7 @@ export class UserService {
   async findAll(query: UserQueryDto = {}) {
     const {
       keyword,
+      role,
       orderBy = 'id',
       order = 'DESC',
       page = 1,
@@ -35,6 +32,18 @@ export class UserService {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('user.roles', 'roles');
+
+    if (role) {
+      // ⚠️ 不要使用 .andWhere('roles.id = :roleId')！
+      // 若直接使用 where 过滤 roles 别名，会导致该用户其他未被匹配的 role 被过滤掉，导致返回数据不完整。
+      // 正确做法：新建一个无副作用的 innerJoin 替身 'roleFilter' 专门用来筛选主表，而不影响 SELECT 的 'roles' 数据。
+      queryBuilder.innerJoin(
+        'user.roles',
+        'roleFilter',
+        'roleFilter.id = :roleId',
+        { roleId: role },
+      );
+    }
 
     if (keyword) {
       // 尝试将 keyword 转换为数字，以便后续匹配 ID
@@ -94,12 +103,6 @@ export class UserService {
    * @throws ConflictException 用户名已存在
    */
   async create(user: Partial<Pick<User, 'username' | 'password'>>) {
-    const existingUser = await this.userRepository.findOne({
-      where: { username: user.username },
-    });
-    if (existingUser) {
-      throw new ConflictException('用户名已存在');
-    }
     const newUser = this.userRepository.create(user);
     const savedUser = await this.userRepository.save(newUser);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -122,16 +125,6 @@ export class UserService {
     const existingUser = await this.userRepository.findOne({ where: { id } });
     if (!existingUser) {
       throw new NotFoundException('用户不存在');
-    }
-
-    // 如果要更新用户名，检查新用户名是否已被占用
-    if (user.username && user.username !== existingUser.username) {
-      const duplicateUser = await this.userRepository.findOne({
-        where: { username: user.username },
-      });
-      if (duplicateUser) {
-        throw new ConflictException('用户名已存在');
-      }
     }
 
     await this.userRepository.update(id, user);

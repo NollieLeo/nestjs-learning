@@ -3,6 +3,7 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from 'nestjs-pino';
 import { AllExceptionFilter } from './filters/all-exception.filter';
+import { TypeormExceptionFilter } from './filters/typeorm-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -18,7 +19,11 @@ async function bootstrap() {
 
   app.useLogger(logger);
 
-  app.useGlobalFilters(new AllExceptionFilter(logger, httpAdapterHost));
+  // 越宽泛的过滤器应该越先调用（放在前面）
+  app.useGlobalFilters(
+    new AllExceptionFilter(logger, httpAdapterHost),
+    new TypeormExceptionFilter(logger),
+  );
 
   // Enable global validation pipe
   app.useGlobalPipes(
