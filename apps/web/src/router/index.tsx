@@ -1,20 +1,67 @@
 import { createBrowserRouter, Navigate } from 'react-router';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
-import Home from '../pages/Home';
+import { lazy, Suspense } from 'react';
+import { Spin } from 'antd';
+import AuthGuard from '@/components/AuthGuard';
+import GuestGuard from '@/components/GuestGuard';
+import AdminLayout from '@/layouts/AdminLayout';
+import styles from './router.module.scss';
+
+// 懒加载页面组件
+const Login = lazy(() => import('@/pages/Login'));
+const Register = lazy(() => import('@/pages/Register'));
+const Home = lazy(() => import('@/pages/Home'));
+
+// 全局的懒加载 Loading 过渡组件
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense
+    fallback={
+      <div className={styles.suspenseContainer}>
+        <Spin size="large" />
+      </div>
+    }
+  >
+    {children}
+  </Suspense>
+);
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: (
+      <AuthGuard>
+        <AdminLayout />
+      </AuthGuard>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          <SuspenseWrapper>
+            <Home />
+          </SuspenseWrapper>
+        ),
+      },
+    ],
   },
   {
     path: '/login',
-    element: <Login />,
+    element: (
+      <GuestGuard>
+        <SuspenseWrapper>
+          <Login />
+        </SuspenseWrapper>
+      </GuestGuard>
+    ),
   },
   {
     path: '/register',
-    element: <Register />,
+    element: (
+      <GuestGuard>
+        <SuspenseWrapper>
+          <Register />
+        </SuspenseWrapper>
+      </GuestGuard>
+    ),
   },
   {
     path: '*',

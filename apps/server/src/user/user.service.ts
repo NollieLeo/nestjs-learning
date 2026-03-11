@@ -97,6 +97,7 @@ export class UserService {
   findByUsername(username: string, selectPassword = false) {
     const qb = this.userRepository
       .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'roles')
       .where('user.username = :username', { username });
 
     if (selectPassword) {

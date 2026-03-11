@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from './user.service';
@@ -15,6 +16,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { Logger } from 'nestjs-pino';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RoleEnum } from '@nestjs-learning/shared';
 
 /**
  * 用户控制器
@@ -76,6 +81,8 @@ export class UserController {
    * 根据ID删除用户
    * @param id 用户 ID
    */
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(RoleEnum.ADMIN)
   @Delete(':id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);

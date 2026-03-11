@@ -6,6 +6,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 interface JwtPayload {
   sub: number;
   username: string;
+  roles?: string[];
 }
 
 @Injectable()
@@ -22,6 +23,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * 解析 JWT payload，返回值会挂载到 req.user
    */
   validate(payload: JwtPayload) {
-    return { id: payload.sub, username: payload.username };
+    return {
+      id: payload.sub,
+      username: payload.username,
+      roles: payload.roles || [],
+    };
   }
 }

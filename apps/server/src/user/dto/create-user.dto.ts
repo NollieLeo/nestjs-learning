@@ -1,9 +1,10 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { PASSWORD_MIN_LENGTH, RegisterRequest } from '@nestjs-learning/shared';
 
 /**
  * 创建用户 DTO
  */
-export class CreateUserDto {
+export class CreateUserDto implements RegisterRequest {
   /**
    * 用户名
    * @example wengkaimin
@@ -18,6 +19,6 @@ export class CreateUserDto {
    */
   @IsString()
   @IsNotEmpty()
-  @MinLength(6)
+  @MinLength(PASSWORD_MIN_LENGTH)
   password: string;
 }

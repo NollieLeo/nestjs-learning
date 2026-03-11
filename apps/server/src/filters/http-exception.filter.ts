@@ -16,16 +16,39 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
-    const message = exception.message;
+    const exceptionResponse = exception.getResponse();
 
-    this.logger.error(message, exception.stack);
+    // 尝试提取更具体的错误信息（如 ValidationPipe 抛出的数组）
+    let message = exception.message;
+    if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+      const resObj = exceptionResponse as Record<string, unknown>;
+      if (resObj.message) {
+        // 如果是数组（通常是类验证器错误），我们用逗号拼接一下
+        if (Array.isArray(resObj.message)) {
+          message = resObj.message.join(', ');
+        } else if (typeof resObj.message === 'string') {
+          message = resObj.message;
+        }
+      }
+    }
 
-    response.status(status).json({
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      method: request.method,
+    // 后端日志记录详细的上下文
+    this.logger.error(
+      {
+        path: request.url,
+        method: request.method,
+        body: request.body as unknown,
+        query: request.query,
+        stack: exception.stack,
+      },
       message,
+    );
+
+    // 统一失败响应格式
+    response.status(status).json({
+      code: status,
+      message,
+      error: exception.name,
     });
   }
 }

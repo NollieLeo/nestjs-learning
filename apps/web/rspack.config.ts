@@ -1,3 +1,4 @@
+import path from 'path';
 import { defineConfig } from '@rspack/cli';
 import { rspack, type SwcLoaderOptions } from '@rspack/core';
 import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
@@ -13,6 +14,9 @@ export default defineConfig({
   },
   resolve: {
     extensions: ['...', '.ts', '.tsx', '.jsx'],
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
   module: {
     rules: [

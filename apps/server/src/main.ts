@@ -5,6 +5,7 @@ import { Logger } from 'nestjs-pino';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { TypeormExceptionFilter } from './filters/typeorm-exception.filter';
 import { EntityNotFoundExceptionFilter } from './filters/entity-not-found-exception.filter';
+import { TransformInterceptor } from './interceptors/transform.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -19,6 +20,9 @@ async function bootstrap() {
   const httpAdapterHost = app.get(HttpAdapterHost);
 
   app.useLogger(logger);
+
+  // 统一响应体格式拦截器
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   // 越宽泛的过滤器应该越先调用（放在前面）
   app.useGlobalFilters(

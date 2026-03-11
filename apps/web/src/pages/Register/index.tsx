@@ -1,8 +1,9 @@
-import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { register } from '../../services/api';
+import { useRequest } from 'ahooks';
+import { register } from '@/services/auth';
+import type { RegisterRequest } from '@nestjs-learning/shared';
 import styles from './Register.module.scss';
 
 interface RegisterForm {
@@ -13,30 +14,31 @@ interface RegisterForm {
 
 export default function Register() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
 
-  const onFinish = async (values: RegisterForm) => {
-    setLoading(true);
-    try {
-      await register({
+  const { run: handleRegister, loading } = useRequest(
+    async (values: RegisterForm) => {
+      const payload: RegisterRequest = {
         username: values.username,
         password: values.password,
-      });
-      message.success('注册成功，请登录');
-      navigate('/login');
-    } catch (err: any) {
-      message.error(err.response?.data?.message || '注册失败');
-    } finally {
-      setLoading(false);
-    }
-  };
+      };
+      const { data } = await register(payload);
+      return data;
+    },
+    {
+      manual: true,
+      onSuccess: () => {
+        message.success('注册成功，请登录');
+        navigate('/login');
+      },
+    },
+  );
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>创建账号</h1>
         <p className={styles.subtitle}>注册一个新账号</p>
-        <Form onFinish={onFinish} size="large">
+        <Form onFinish={handleRegister} size="large">
           <Form.Item
             name="username"
             rules={[{ required: true, message: '请输入用户名' }]}

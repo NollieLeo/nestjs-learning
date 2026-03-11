@@ -1,5 +1,10 @@
 {
   "extends": "@nestjs-learning/ts-config/react.json",
-  "compilerOptions": {},
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
   "include": ["src"]
 }

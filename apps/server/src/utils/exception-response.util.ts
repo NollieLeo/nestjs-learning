@@ -21,7 +21,8 @@ export function sendFormattedExceptionResponse(
   const { statusCode, message, exceptionName, errorMessage } = exceptionDetails;
   const clientIp = getClientIp(request);
 
-  const responseBody = {
+  // 日志记录详细信息
+  const logDetails = {
     headers: response.getHeaders(),
     query: request.query,
     params: request.params,
@@ -36,7 +37,12 @@ export function sendFormattedExceptionResponse(
     error: errorMessage,
   };
 
-  logger.error(message, responseBody);
+  logger.error(message, logDetails);
 
-  response.status(statusCode).json(responseBody);
+  // 给前端返回精简的统一格式响应
+  response.status(statusCode).json({
+    code: statusCode, // 失败时 code 等于 http status code
+    message,
+    error: errorMessage,
+  });
 }

@@ -9,6 +9,7 @@ import { join } from 'path';
 const pinoLogger = LoggerModule.forRootAsync({
   useFactory: () => ({
     pinoHttp: {
+      redact: ['req.headers.authorization', 'req.body.password'],
       transport:
         process.env.NODE_ENV === 'development'
           ? {

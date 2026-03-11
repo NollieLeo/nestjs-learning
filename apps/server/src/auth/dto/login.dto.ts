@@ -1,10 +1,10 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { PASSWORD_MIN_LENGTH } from '@nestjs-learning/shared';
+import { PASSWORD_MIN_LENGTH, LoginRequest } from '@nestjs-learning/shared';
 
 /**
  * 登录 DTO
  */
-export class LoginDto {
+export class LoginDto implements LoginRequest {
   /**
    * 用户名
    * @example wengkaimin
