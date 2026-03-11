@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router';
-import { Layout, Menu, Button, theme } from 'antd';
+import { Layout, Menu, Button } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -16,9 +16,6 @@ const { Header, Sider, Content } = Layout;
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
   const logout = useAuthStore((state) => state.logout);
 
   const handleLogout = () => {
@@ -49,10 +46,7 @@ export default function AdminLayout() {
         />
       </Sider>
       <Layout>
-        <Header
-          className={styles.header}
-          style={{ background: colorBgContainer }}
-        >
+        <Header className={styles.header}>
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -70,13 +64,7 @@ export default function AdminLayout() {
             </Button>
           </div>
         </Header>
-        <Content
-          className={styles.content}
-          style={{
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
+        <Content className={styles.content}>
           <GlobalErrorBoundary>
             {/* 子路由占位符 */}
             <Outlet />

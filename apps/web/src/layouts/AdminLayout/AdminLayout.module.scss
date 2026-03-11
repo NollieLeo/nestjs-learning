@@ -1,5 +1,7 @@
 .layoutContainer {
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
 }
 
 .logo {
@@ -19,6 +21,7 @@
   justify-content: space-between;
   align-items: center;
   padding-right: 24px;
+  background-color: #fff;
 }
 
 .collapseButton {
@@ -28,7 +31,8 @@
 }
 
 .content {
-  margin: 24px 16px;
   padding: 24px;
   min-height: 280px;
+  background: #f0f2f5;
+  overflow: auto;
 }
