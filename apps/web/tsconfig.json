@@ -1,0 +1,5 @@
+{
+  "extends": "@nestjs-learning/ts-config/react.json",
+  "compilerOptions": {},
+  "include": ["src"]
+}

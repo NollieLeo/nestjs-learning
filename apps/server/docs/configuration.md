@@ -20,17 +20,17 @@
 
 ## 环境变量列表
 
-| 变量 | 说明 | 默认值 |
-|------|------|--------|
-| `NODE_ENV` | 运行环境 | development |
-| `PORT` | 服务端口 | 3001 |
-| `DB_TYPE` | 数据库类型 | mysql |
-| `DB_HOST` | 数据库地址 | - |
-| `DB_PORT` | 数据库端口 | 3306 |
-| `DB_USERNAME` | 数据库用户名 | - |
-| `DB_PASSWORD` | 数据库密码 | - |
-| `DB_NAME` | 数据库名称 | - |
-| `DB_SYNC` | 自动同步实体 | false |
+| 变量          | 说明         | 默认值      |
+| ------------- | ------------ | ----------- |
+| `NODE_ENV`    | 运行环境     | development |
+| `PORT`        | 服务端口     | 3001        |
+| `DB_TYPE`     | 数据库类型   | mysql       |
+| `DB_HOST`     | 数据库地址   | -           |
+| `DB_PORT`     | 数据库端口   | 3306        |
+| `DB_USERNAME` | 数据库用户名 | -           |
+| `DB_PASSWORD` | 数据库密码   | -           |
+| `DB_NAME`     | 数据库名称   | -           |
+| `DB_SYNC`     | 自动同步实体 | false       |
 
 ## 验证
 
@@ -74,6 +74,7 @@ const isDev = process.env.NODE_ENV === 'development';
 ```
 
 **推荐使用 ConfigService**，因为：
+
 - 类型安全
 - 支持默认值
 - 便于测试和 mock

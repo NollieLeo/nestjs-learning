@@ -1,0 +1,36 @@
+{
+  "name": "web",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "rspack dev",
+    "build": "rspack build",
+    "preview": "rspack preview",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,scss}\"",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.1.0",
+    "@nestjs-learning/shared": "workspace:*",
+    "ahooks": "^3.9.6",
+    "antd": "^6.3.2",
+    "lodash-es": "^4.17.23",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "sass": "^1.98.0"
+  },
+  "devDependencies": {
+    "@nestjs-learning/eslint-config": "workspace:*",
+    "@nestjs-learning/ts-config": "workspace:*",
+    "@rspack/cli": "^1.7.8",
+    "@rspack/core": "^1.7.8",
+    "@rspack/plugin-react-refresh": "^1.6.0",
+    "@types/lodash-es": "^4.17.12",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.2",
+    "react-refresh": "^0.18.0",
+    "typescript": "^5.9.3"
+  }
+}

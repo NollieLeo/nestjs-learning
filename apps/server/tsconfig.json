@@ -1,0 +1,7 @@
+{
+  "extends": "@nestjs-learning/ts-config/nest.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./"
+  }
+}

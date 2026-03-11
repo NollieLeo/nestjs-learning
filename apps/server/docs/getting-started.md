@@ -37,6 +37,7 @@ export class UserModule {}
 ```
 
 **本项目模块**：
+
 - `AppModule` - 根模块，导入所有子模块
 - `UserModule` - 用户 CRUD
 - `LogsModule` - 日志记录
@@ -47,18 +48,18 @@ export class UserModule {}
 处理 HTTP 请求，定义路由。
 
 ```typescript
-@Controller('user')  // 路由前缀 /api/v1/user
+@Controller('user') // 路由前缀 /api/v1/user
 export class UserController {
-  @Get()           // GET /api/v1/user
+  @Get() // GET /api/v1/user
   getUsers() {}
 
-  @Post()          // POST /api/v1/user
+  @Post() // POST /api/v1/user
   addUser() {}
 
-  @Put(':id')      // PUT /api/v1/user/:id
+  @Put(':id') // PUT /api/v1/user/:id
   updateUser() {}
 
-  @Delete(':id')   // DELETE /api/v1/user/:id
+  @Delete(':id') // DELETE /api/v1/user/:id
   deleteUser() {}
 }
 ```
@@ -136,15 +137,15 @@ HTTP 响应
 
 ## 常用装饰器
 
-| 装饰器 | 用途 |
-|--------|------|
-| `@Controller()` | 定义控制器 |
-| `@Get()` `@Post()` `@Put()` `@Delete()` | HTTP 方法 |
-| `@Param()` | 获取路由参数 |
-| `@Query()` | 获取查询参数 |
-| `@Body()` | 获取请求体 |
-| `@Injectable()` | 标记可注入的服务 |
-| `@Module()` | 定义模块 |
+| 装饰器                                  | 用途             |
+| --------------------------------------- | ---------------- |
+| `@Controller()`                         | 定义控制器       |
+| `@Get()` `@Post()` `@Put()` `@Delete()` | HTTP 方法        |
+| `@Param()`                              | 获取路由参数     |
+| `@Query()`                              | 获取查询参数     |
+| `@Body()`                               | 获取请求体       |
+| `@Injectable()`                         | 标记可注入的服务 |
+| `@Module()`                             | 定义模块         |
 
 ## 启动应用
 
@@ -160,15 +161,15 @@ pnpm run start:prod
 
 本项目默认前缀：`/api/v1`
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/v1/user | 获取所有用户 |
-| POST | /api/v1/user | 创建用户 |
-| PUT | /api/v1/user/:id | 更新用户 |
-| DELETE | /api/v1/user/:id | 删除用户 |
-| GET | /api/v1/user/:id/profile | 获取用户详情 |
-| GET | /api/v1/logs | 获取日志列表 |
-| GET | /api/v1/logs/stats | 日志统计 |
+| 方法   | 路径                     | 说明         |
+| ------ | ------------------------ | ------------ |
+| GET    | /api/v1/user             | 获取所有用户 |
+| POST   | /api/v1/user             | 创建用户     |
+| PUT    | /api/v1/user/:id         | 更新用户     |
+| DELETE | /api/v1/user/:id         | 删除用户     |
+| GET    | /api/v1/user/:id/profile | 获取用户详情 |
+| GET    | /api/v1/logs             | 获取日志列表 |
+| GET    | /api/v1/logs/stats       | 日志统计     |
 
 ## 下一步
 

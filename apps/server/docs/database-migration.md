@@ -4,10 +4,10 @@
 
 ## 为什么需要迁移？
 
-| 方式 | 开发环境 | 生产环境 |
-|------|---------|---------|
+| 方式                | 开发环境    | 生产环境            |
+| ------------------- | ----------- | ------------------- |
 | `synchronize: true` | ✅ 快速迭代 | ❌ 可能导致数据丢失 |
-| Migration 迁移 | ✅ 版本控制 | ✅ 安全可控 |
+| Migration 迁移      | ✅ 版本控制 | ✅ 安全可控         |
 
 ## 快速开始
 
@@ -20,6 +20,7 @@ pnpm migration:generate --name=DescriptiveName
 ```
 
 例如：
+
 ```bash
 pnpm migration:generate --name=AddUserAvatar
 ```
@@ -48,13 +49,13 @@ pnpm migration:show
 
 ## 可用命令
 
-| 命令 | 说明 |
-|------|------|
-| `pnpm migration:generate --name=Name` | 根据实体变化自动生成迁移 |
-| `pnpm migration:create --name=Name` | 创建空白迁移文件（手动编写） |
-| `pnpm migration:run` | 执行所有待执行的迁移 |
-| `pnpm migration:revert` | 回滚最后一次迁移 |
-| `pnpm migration:show` | 显示迁移状态 |
+| 命令                                  | 说明                         |
+| ------------------------------------- | ---------------------------- |
+| `pnpm migration:generate --name=Name` | 根据实体变化自动生成迁移     |
+| `pnpm migration:create --name=Name`   | 创建空白迁移文件（手动编写） |
+| `pnpm migration:run`                  | 执行所有待执行的迁移         |
+| `pnpm migration:revert`               | 回滚最后一次迁移             |
+| `pnpm migration:show`                 | 显示迁移状态                 |
 
 ## 迁移文件示例
 
@@ -101,8 +102,8 @@ export class AddUserAvatar1705678901234 implements MigrationInterface {
 
 ## 配置文件说明
 
-| 文件 | 用途 |
-|------|------|
-| `src/config/database.config.ts` | 数据库配置工厂（公共配置） |
-| `src/data-source.ts` | TypeORM CLI 配置（迁移命令使用） |
-| `src/migrations/` | 迁移文件目录 |
+| 文件                            | 用途                             |
+| ------------------------------- | -------------------------------- |
+| `src/config/database.config.ts` | 数据库配置工厂（公共配置）       |
+| `src/data-source.ts`            | TypeORM CLI 配置（迁移命令使用） |
+| `src/migrations/`               | 迁移文件目录                     |

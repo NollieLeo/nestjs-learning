@@ -4,10 +4,10 @@
 
 ## 技术选型
 
-| 特性 | Pino | Winston |
-|------|------|---------|
-| 性能 | ⚡ 极快 | 一般 |
-| 输出格式 | JSON | 多种 |
+| 特性        | Pino        | Winston      |
+| ----------- | ----------- | ------------ |
+| 性能        | ⚡ 极快     | 一般         |
+| 输出格式    | JSON        | 多种         |
 | NestJS 集成 | nestjs-pino | nest-winston |
 
 选择 Pino 的原因：**高性能 + 结构化 JSON 日志**
@@ -22,8 +22,8 @@ LoggerModule.forRootAsync({
     pinoHttp: {
       transport:
         process.env.NODE_ENV === 'development'
-          ? { target: 'pino-pretty' }  // 开发：彩色输出
-          : { target: 'pino-roll' },   // 生产：文件滚动
+          ? { target: 'pino-pretty' } // 开发：彩色输出
+          : { target: 'pino-roll' }, // 生产：文件滚动
     },
   }),
 });
