@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { UserQueryDto } from './dto/user-query.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 /**
  * 用户服务
@@ -102,7 +104,7 @@ export class UserService {
    * @returns 创建的用户（安全返回）
    * @throws ConflictException 用户名已存在
    */
-  async create(user: Partial<Pick<User, 'username' | 'password'>>) {
+  async create(user: CreateUserDto) {
     const newUser = this.userRepository.create(user);
     const savedUser = await this.userRepository.save(newUser);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -115,17 +117,9 @@ export class UserService {
    * @param id - 用户 ID
    * @param user - 要更新的用户信息
    * @returns 更新后的用户
-   * @throws NotFoundException 用户不存在
-   * @throws ConflictException 用户名已被占用
    */
-  async update(
-    id: User['id'],
-    user: Partial<Pick<User, 'username' | 'password'>>,
-  ) {
-    const existingUser = await this.userRepository.findOne({ where: { id } });
-    if (!existingUser) {
-      throw new NotFoundException('用户不存在');
-    }
+  async update(id: User['id'], user: UpdateUserDto) {
+    await this.userRepository.findOneByOrFail({ id });
 
     await this.userRepository.update(id, user);
 
@@ -140,10 +134,7 @@ export class UserService {
    * @throws NotFoundException 用户不存在
    */
   async remove(id: User['id']) {
-    const existingUser = await this.userRepository.findOne({ where: { id } });
-    if (!existingUser) {
-      throw new NotFoundException('用户不存在');
-    }
+    await this.userRepository.findOneByOrFail({ id });
     return this.userRepository.delete(id);
   }
 

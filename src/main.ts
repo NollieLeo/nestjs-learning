@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { Logger } from 'nestjs-pino';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { TypeormExceptionFilter } from './filters/typeorm-exception.filter';
+import { EntityNotFoundExceptionFilter } from './filters/entity-not-found-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -23,6 +24,7 @@ async function bootstrap() {
   app.useGlobalFilters(
     new AllExceptionFilter(logger, httpAdapterHost),
     new TypeormExceptionFilter(logger),
+    new EntityNotFoundExceptionFilter(logger),
   );
 
   // Enable global validation pipe
