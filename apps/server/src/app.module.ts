@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { RangeModule } from './range/range.module';
 import { UserModule } from './user/user.module';
 import { LogsModule } from './logs/logs.module';
+import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
@@ -29,15 +30,17 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
         DB_TYPE: Joi.string()
           .valid('mysql', 'postgres', 'sqlite', 'mssql')
           .default('mysql'),
+        JWT_SECRET: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (): TypeOrmModuleOptions => ({
         ...getDatabaseConfig(),
-        autoLoadEntities: true, // 自动加载通过 forFeature 注册的实体
+        autoLoadEntities: true,
       }),
     }),
+    AuthModule,
     UserModule,
     RangeModule,
     LogsModule,

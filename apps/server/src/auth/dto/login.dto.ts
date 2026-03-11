@@ -1,0 +1,24 @@
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { PASSWORD_MIN_LENGTH } from '@nestjs-learning/shared';
+
+/**
+ * 登录 DTO
+ */
+export class LoginDto {
+  /**
+   * 用户名
+   * @example wengkaimin
+   */
+  @IsString()
+  @IsNotEmpty()
+  username: string;
+
+  /**
+   * 密码
+   * @example 123456
+   */
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(PASSWORD_MIN_LENGTH)
+  password: string;
+}

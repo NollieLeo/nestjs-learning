@@ -90,6 +90,23 @@ export class UserService {
   }
 
   /**
+   * 根据用户名查询用户（支持查询密码字段用于登录校验）
+   * @param username - 用户名
+   * @param selectPassword - 是否查询密码字段
+   */
+  findByUsername(username: string, selectPassword = false) {
+    const qb = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username });
+
+    if (selectPassword) {
+      qb.addSelect('user.password');
+    }
+
+    return qb.getOne();
+  }
+
+  /**
    * 根据 ID 查询用户
    * @param id - 用户 ID
    * @returns 用户信息或 null

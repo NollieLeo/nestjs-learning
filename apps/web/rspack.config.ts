@@ -44,7 +44,27 @@ export default defineConfig({
           },
         ],
       },
+      {
+        test: /\.module\.scss$/,
+        use: [
+          {
+            loader: 'sass-loader',
+          },
+        ],
+        type: 'css/module',
+      },
+      {
+        test: /\.scss$/,
+        exclude: /\.module\.scss$/,
+        use: [{ loader: 'sass-loader' }],
+        type: 'css',
+      },
     ],
+    parser: {
+      'css/module': {
+        namedExports: false,
+      },
+    },
   },
   plugins: [
     new rspack.HtmlRspackPlugin({
@@ -62,5 +82,15 @@ export default defineConfig({
   },
   experiments: {
     css: true,
+  },
+  devServer: {
+    historyApiFallback: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    ],
   },
 });
