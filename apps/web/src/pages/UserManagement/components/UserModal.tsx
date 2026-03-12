@@ -1,17 +1,14 @@
 import { Modal, Form, Input, Select, message, Radio, Divider } from 'antd';
 import { useEffect } from 'react';
 import { useRequest } from 'ahooks';
-import {
-  createUser,
-  updateUser,
-  User,
-  getRoleList,
-  UserRole,
-} from '@/services';
+import { createUser, updateUser, User, UserRole } from '@/services';
 import type {
   CreateUserRequest,
   UpdateUserRequest,
 } from '@nestjs-learning/shared';
+import { RegionCascader, RegionValue } from '@/components/RegionCascader';
+import { useRoleOptions } from '@/hooks/useRoleOptions';
+import { buildAddressInfoPayload, extractRegionValue } from '@/utils/address';
 
 interface UserModalProps {
   open: boolean;
@@ -29,29 +26,28 @@ export default function UserModal({
   const [form] = Form.useForm();
   const isEdit = !!editData;
 
-  const { data: roleOptions, run: fetchRoles } = useRequest(
-    async () => {
-      const res = await getRoleList({ limit: 100 });
-      return res.data.data.map((r: UserRole) => ({
-        label: r.name,
-        value: r.id,
-      }));
-    },
-    { manual: true },
-  );
+  const { roleOptions, fetchRoles } = useRoleOptions();
 
   const { runAsync: submit, loading } = useRequest(
     async (
-      values: CreateUserRequest & UpdateUserRequest & { roles?: number[] },
+      values: CreateUserRequest &
+        UpdateUserRequest & {
+          roles?: number[];
+          region?: RegionValue;
+          profile?: Record<string, unknown>;
+        },
     ) => {
       const payload = {
         username: values.username as string,
         password: values.password,
         roles: values.roles ? values.roles.map((id: number) => ({ id })) : [],
         profile: {
-          avatar: values.profile?.avatar || '',
-          gender: values.profile?.gender ?? 0,
-          address: values.profile?.address || '',
+          avatar: (values.profile?.avatar as string) || '',
+          gender: (values.profile?.gender as number) ?? 0,
+          addressInfo: buildAddressInfoPayload(
+            values.region,
+            values.profile?.detailAddress as string | undefined,
+          ),
         },
       };
 
@@ -70,14 +66,16 @@ export default function UserModal({
     if (open) {
       fetchRoles();
       if (editData) {
+        const addr = editData.profile?.addressInfo;
         form.setFieldsValue({
           username: editData.username,
           roles: editData.roles?.map((r: UserRole) => r.id),
           profile: {
             avatar: editData.profile?.avatar,
             gender: editData.profile?.gender ?? 0,
-            address: editData.profile?.address,
+            detailAddress: addr?.detailAddress,
           },
+          region: extractRegionValue(addr),
         });
       } else {
         form.resetFields();
@@ -155,8 +153,12 @@ export default function UserModal({
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item name={['profile', 'address']} label="联系地址">
-          <Input.TextArea placeholder="请输入详细地址" rows={3} />
+        <Form.Item name="region" label="省市区">
+          <RegionCascader placeholder="请选择省市区" />
+        </Form.Item>
+
+        <Form.Item name={['profile', 'detailAddress']} label="详细地址">
+          <Input.TextArea placeholder="请输入详细门牌号等" rows={2} />
         </Form.Item>
       </Form>
     </Modal>

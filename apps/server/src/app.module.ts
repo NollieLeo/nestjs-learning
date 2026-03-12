@@ -9,6 +9,7 @@ import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './config/database.config';
+import { RegionModule } from './region/region.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -46,6 +47,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     RangeModule,
     LogsModule,
     RolesModule,
+    RegionModule,
   ],
   controllers: [],
   providers: [],

@@ -8,6 +8,32 @@ import {
 import { User } from './user.entity';
 
 /**
+ * 地址信息值对象 (Embedded Entity)
+ */
+export class AddressInfo {
+  @Column({ name: 'province_code', default: '', nullable: true })
+  provinceCode: string;
+
+  @Column({ name: 'province_name', default: '', nullable: true })
+  provinceName: string;
+
+  @Column({ name: 'city_code', default: '', nullable: true })
+  cityCode: string;
+
+  @Column({ name: 'city_name', default: '', nullable: true })
+  cityName: string;
+
+  @Column({ name: 'district_code', default: '', nullable: true })
+  districtCode: string;
+
+  @Column({ name: 'district_name', default: '', nullable: true })
+  districtName: string;
+
+  @Column({ name: 'detail_address', default: '', nullable: true })
+  detailAddress: string;
+}
+
+/**
  * 用户资料实体
  * 对应数据库中的 profile 表
  */
@@ -35,11 +61,11 @@ export class Profile {
   avatar: string;
 
   /**
-   * 详细地址
-   * @example 浙江省杭州市西湖区
+   * 嵌套地址信息
+   * TypeORM 自动展开为前缀无关的多个字段
    */
-  @Column({ default: '' })
-  address: string;
+  @Column(() => AddressInfo, { prefix: false })
+  addressInfo: AddressInfo;
 
   /**
    * 关联的用户

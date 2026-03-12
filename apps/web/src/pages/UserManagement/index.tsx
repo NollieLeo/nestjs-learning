@@ -1,46 +1,23 @@
-import { Table, Space, Button, Tag, Popconfirm, message, Avatar } from 'antd';
-import { useAntdTable } from 'ahooks';
-import { getUserList, deleteUser, User } from '@/services';
+import { Table, Button, message } from 'antd';
+import { deleteUser } from '@/services';
 import styles from './UserManagement.module.scss';
-import { RoleEnum } from '@nestjs-learning/shared';
 import UserModal from './components/UserModal';
-import { useCrudModal } from '@/hooks/useCrudModal';
 import { useAuthStore } from '@/stores';
-import { UserOutlined } from '@ant-design/icons';
-
-// API 调用适配给 ahooks 的 useAntdTable
-const getTableData = async (
-  { current, pageSize }: { current: number; pageSize: number },
-  formData: Record<string, unknown>,
-) => {
-  const res = await getUserList({
-    page: current,
-    limit: pageSize,
-    ...formData,
-  });
-
-  // 根据服务端返回的数据结构进行适配
-  // 这里 api.ts 的拦截器返回的是 res.data
-  return {
-    total: res.data.pagination.total,
-    list: res.data.data,
-  };
-};
+import { useUserColumns } from './hooks/useUserColumns';
+import { useUserTable } from './hooks/useUserTable';
 
 export default function UserManagement() {
   const { userInfo } = useAuthStore();
-  const { tableProps, refresh } = useAntdTable(getTableData, {
-    defaultPageSize: 10,
-  });
-
   const {
+    tableProps,
+    refresh,
     modalOpen,
     editData,
     handleAdd,
     handleEdit,
     handleModalSuccess,
     handleCancel,
-  } = useCrudModal<User>(refresh);
+  } = useUserTable();
 
   const handleDelete = async (id: number) => {
     try {
@@ -52,94 +29,11 @@ export default function UserManagement() {
     }
   };
 
-  const columns = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: 80,
-    },
-    {
-      title: '头像',
-      key: 'avatar',
-      width: 80,
-      render: (_: unknown, record: User) => (
-        <Avatar
-          src={record.profile?.avatar}
-          icon={!record.profile?.avatar && <UserOutlined />}
-        />
-      ),
-    },
-    {
-      title: '用户名',
-      key: 'username',
-      render: (_: unknown, record: User) => (
-        <Space>
-          <span>{record.username}</span>
-          {userInfo?.id === record.id && <Tag color="blue">当前账号</Tag>}
-        </Space>
-      ),
-    },
-    {
-      title: '角色',
-      key: 'roles',
-      dataIndex: 'roles',
-      render: (_: unknown, record: User) => (
-        <>
-          {record.roles?.map((role) => {
-            const color = role.name === RoleEnum.ADMIN ? 'volcano' : 'green';
-            return (
-              <Tag color={color} key={role.id}>
-                {role.name.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: '性别',
-      key: 'gender',
-      width: 80,
-      render: (_: unknown, record: User) => {
-        const gender = record.profile?.gender;
-        if (gender === 1) return <Tag color="blue">男</Tag>;
-        if (gender === 2) return <Tag color="magenta">女</Tag>;
-        return <Tag color="default">保密</Tag>;
-      },
-    },
-    {
-      title: '地址',
-      key: 'address',
-      render: (_: unknown, record: User) => record.profile?.address || '-',
-    },
-    {
-      title: '操作',
-      key: 'action',
-      render: (_: unknown, record: User) => {
-        const isSelf = userInfo?.id === record.id;
-
-        return (
-          <Space size="middle">
-            <Button type="link" onClick={() => handleEdit(record)}>
-              编辑
-            </Button>
-            <Popconfirm
-              title="确认删除该用户吗？"
-              onConfirm={() => handleDelete(record.id)}
-              okText="确定"
-              cancelText="取消"
-              disabled={isSelf}
-            >
-              <Button type="link" danger disabled={isSelf}>
-                删除
-              </Button>
-            </Popconfirm>
-          </Space>
-        );
-      },
-    },
-  ];
+  const columns = useUserColumns({
+    currentUserId: userInfo?.id,
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+  });
 
   return (
     <div className={styles.container}>

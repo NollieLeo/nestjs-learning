@@ -13,6 +13,36 @@ class RoleIdDto {
   id?: number;
 }
 
+export class AddressInfoDto {
+  @IsOptional()
+  @IsString()
+  provinceCode?: string;
+
+  @IsOptional()
+  @IsString()
+  provinceName?: string;
+
+  @IsOptional()
+  @IsString()
+  cityCode?: string;
+
+  @IsOptional()
+  @IsString()
+  cityName?: string;
+
+  @IsOptional()
+  @IsString()
+  districtCode?: string;
+
+  @IsOptional()
+  @IsString()
+  districtName?: string;
+
+  @IsOptional()
+  @IsString()
+  detailAddress?: string;
+}
+
 export class ProfileDto {
   @IsOptional()
   gender?: number;
@@ -21,7 +51,9 @@ export class ProfileDto {
   avatar?: string;
 
   @IsOptional()
-  address?: string;
+  @ValidateNested()
+  @Type(() => AddressInfoDto)
+  addressInfo?: AddressInfoDto;
 }
 
 /**

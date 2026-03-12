@@ -5,11 +5,21 @@ export interface UserRole {
   name: RoleEnum;
 }
 
+export interface AddressInfo {
+  provinceCode?: string;
+  provinceName?: string;
+  cityCode?: string;
+  cityName?: string;
+  districtCode?: string;
+  districtName?: string;
+  detailAddress?: string;
+}
+
 export interface UserProfile {
   id: number;
   gender: number;
   avatar: string;
-  address: string;
+  addressInfo?: AddressInfo;
 }
 
 export interface User {
