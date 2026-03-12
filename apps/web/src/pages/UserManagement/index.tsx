@@ -1,29 +1,31 @@
-import { Table, Button, message } from 'antd';
+import { Table, Button, message, Form } from 'antd';
 import { deleteUser } from '@/services';
 import styles from './UserManagement.module.scss';
 import UserModal from './components/UserModal';
+import SearchForm from './components/SearchForm';
 import { useAuthStore } from '@/stores';
 import { useUserColumns } from './hooks/useUserColumns';
 import { useUserTable } from './hooks/useUserTable';
 
 export default function UserManagement() {
+  const [form] = Form.useForm();
   const { userInfo } = useAuthStore();
   const {
     tableProps,
-    refresh,
+    search,
     modalOpen,
     editData,
     handleAdd,
     handleEdit,
     handleModalSuccess,
     handleCancel,
-  } = useUserTable();
+  } = useUserTable(form);
 
   const handleDelete = async (id: number) => {
     try {
       await deleteUser(id);
       message.success('删除成功');
-      refresh();
+      search.submit();
     } catch {
       // 错误已经在拦截器中抛出提示了
     }
@@ -43,6 +45,9 @@ export default function UserManagement() {
           新增用户
         </Button>
       </div>
+
+      <SearchForm form={form} submit={search.submit} reset={search.reset} />
+
       <Table rowKey="id" {...tableProps} columns={columns} />
       <UserModal
         open={modalOpen}
