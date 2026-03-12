@@ -22,6 +22,7 @@ export const useUserColumns = ({
       dataIndex: 'id',
       key: 'id',
       width: 80,
+      sorter: true,
     },
     {
       title: '头像',
@@ -36,7 +37,9 @@ export const useUserColumns = ({
     },
     {
       title: '用户名',
+      dataIndex: 'username',
       key: 'username',
+      sorter: true,
       render: (_: unknown, record: User) => (
         <Space>
           <span>{record.username}</span>
