@@ -44,7 +44,7 @@ export class Profile {
   /**
    * 关联的用户
    */
-  @OneToOne(() => User)
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

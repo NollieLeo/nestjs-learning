@@ -191,8 +191,8 @@ export class UserService {
    * @throws NotFoundException 用户不存在
    */
   async remove(id: User['id']) {
-    await this.userRepository.findOneByOrFail({ id });
-    return this.userRepository.delete(id);
+    const user = await this.userRepository.findOneByOrFail({ id });
+    return this.userRepository.remove(user);
   }
 
   /**

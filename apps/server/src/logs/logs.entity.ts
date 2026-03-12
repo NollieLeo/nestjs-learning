@@ -49,7 +49,7 @@ export class Logs {
   result: number;
 
   /** 操作用户 */
-  @ManyToOne(() => User, (user) => user.logs)
+  @ManyToOne(() => User, (user) => user.logs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }
