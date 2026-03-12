@@ -3,19 +3,27 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   UseGuards,
   Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('认证')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   /**
    * 用户注册
@@ -42,7 +50,36 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req: { user: { id: number; username: string } }) {
-    return req.user;
+  async getProfile(@Request() req: { user: { id: number; username: string } }) {
+    return this.userService.findUserProfile(req.user.id);
+  }
+
+  /**
+   * 更新当前用户资料
+   */
+  @ApiOperation({ summary: '更新当前用户资料' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put('profile')
+  async updateProfile(
+    @Request() req: { user: { id: number } },
+    @Body() dto: UpdateMyProfileDto,
+  ) {
+    // We can cast here safely or add an updateMyProfile in userService, using UpdateUserDto structure
+    return this.userService.update(req.user.id, dto as UpdateUserDto);
+  }
+
+  /**
+   * 修改当前用户密码
+   */
+  @ApiOperation({ summary: '修改当前用户密码' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put('password')
+  async updatePassword(
+    @Request() req: { user: { id: number } },
+    @Body() dto: UpdatePasswordDto,
+  ) {
+    return this.authService.updatePassword(req.user.id, dto);
   }
 }

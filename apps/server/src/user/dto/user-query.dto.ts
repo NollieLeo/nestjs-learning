@@ -1,10 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import type { UserQuery } from '@nestjs-learning/shared';
 
 /**
  * 用户列表查询参数 DTO
  */
-export class UserQueryDto {
+export class UserQueryDto implements UserQuery {
   /**
    * 搜索关键字（支持模糊匹配用户名或精确匹配ID）
    * @example admin

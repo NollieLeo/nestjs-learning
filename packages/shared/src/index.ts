@@ -32,8 +32,41 @@ export interface LoginResponse {
   access_token: string;
 }
 
-export interface UserProfile {
+export interface UpdatePasswordRequest {
+  oldPassword?: string; // Optional if you are an admin resetting, but required for self
+  newPassword: string;
+}
+
+export interface UpdateMyProfileRequest {
+  username?: string;
+  profile?: {
+    avatar?: string;
+    gender?: number;
+    address?: string;
+  };
+}
+
+export interface AuthUserProfile {
   id: number;
   username: string;
   roles?: RoleEnum[];
+  avatar?: string;
+  gender?: number;
 }
+
+/** ===== 公共业务类型 (用户、分页等) ===== */
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}
+
+export * from './role';
+export * from './user';

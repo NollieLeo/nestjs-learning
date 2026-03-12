@@ -16,5 +16,20 @@ export const login = (data: LoginRequest) =>
 export const register = (data: RegisterRequest) =>
   api.post('/auth/register', data);
 
+import type {
+  User,
+  UpdateMyProfileRequest,
+  UpdatePasswordRequest,
+} from '@nestjs-learning/shared';
+
 /** 获取当前用户 */
-export const getProfile = () => api.get('/auth/profile');
+export const getProfile = () =>
+  api.get<unknown, { data: User }>('/auth/profile');
+
+/** 更新自己的个人资料 */
+export const updateMyProfile = (data: UpdateMyProfileRequest) =>
+  api.put('/auth/profile', data);
+
+/** 更新自己的密码 */
+export const updateMyPassword = (data: UpdatePasswordRequest) =>
+  api.put('/auth/password', data);

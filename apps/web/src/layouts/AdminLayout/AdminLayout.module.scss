@@ -22,6 +22,24 @@
   align-items: center;
   padding-right: 24px;
   background-color: #fff;
+
+  .headerRight {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .action {
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s;
+      height: 64px;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.025);
+      }
+    }
+  }
 }
 
 .collapseButton {

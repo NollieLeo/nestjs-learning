@@ -45,7 +45,7 @@ export class User {
   roles: Roles[];
 
   /** 用户的个人资料（一对一） */
-  @OneToOne(() => Profile, (profile) => profile.user)
+  @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   profile: Profile;
 
   @AfterInsert()

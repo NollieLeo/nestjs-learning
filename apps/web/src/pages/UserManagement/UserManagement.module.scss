@@ -1,0 +1,19 @@
+.container {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  min-height: 100%;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      color: rgba(0, 0, 0, 0.88);
+    }
+  }
+}

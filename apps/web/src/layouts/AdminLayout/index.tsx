@@ -1,14 +1,17 @@
-import { Outlet } from 'react-router';
-import { Layout, Menu, Button } from 'antd';
+import { Outlet, useNavigate, useLocation } from 'react-router';
+import { Layout, Menu, Button, Dropdown, Avatar, Space } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
   DashboardOutlined,
   LogoutOutlined,
+  SettingOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { useState } from 'react';
 import { useAuthStore } from '@/stores';
+import { usePermissions } from '@/hooks/usePermissions';
 import GlobalErrorBoundary from '@/components/GlobalErrorBoundary';
 import styles from './AdminLayout.module.scss';
 
@@ -16,12 +19,34 @@ const { Header, Sider, Content } = Layout;
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
-  const logout = useAuthStore((state) => state.logout);
+  const { logout, userInfo } = useAuthStore();
+  const { isAdmin } = usePermissions();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     window.location.href = '/login';
   };
+
+  const userMenuItems = [
+    {
+      key: 'profile',
+      icon: <SettingOutlined />,
+      label: '个人设置',
+      onClick: () => navigate('/profile'),
+    },
+    {
+      type: 'divider' as const,
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: '退出登录',
+      danger: true,
+      onClick: handleLogout,
+    },
+  ];
 
   return (
     <Layout className={styles.layoutContainer}>
@@ -30,18 +55,28 @@ export default function AdminLayout() {
         <Menu
           theme="light"
           mode="inline"
-          defaultSelectedKeys={['1']}
+          selectedKeys={[location.pathname]}
+          onClick={({ key }) => navigate(key)}
           items={[
             {
-              key: '1',
+              key: '/',
               icon: <DashboardOutlined />,
               label: '工作台',
             },
-            {
-              key: '2',
-              icon: <UserOutlined />,
-              label: '用户管理',
-            },
+            ...(isAdmin
+              ? [
+                  {
+                    key: '/users',
+                    icon: <UserOutlined />,
+                    label: '用户管理',
+                  },
+                  {
+                    key: '/roles',
+                    icon: <SafetyCertificateOutlined />,
+                    label: '角色管理',
+                  },
+                ]
+              : []),
           ]}
         />
       </Sider>
@@ -53,15 +88,22 @@ export default function AdminLayout() {
             onClick={() => setCollapsed(!collapsed)}
             className={styles.collapseButton}
           />
-          <div>
-            <Button
-              type="text"
-              danger
-              icon={<LogoutOutlined />}
-              onClick={handleLogout}
+          <div className={styles.headerRight}>
+            <Dropdown
+              menu={{ items: userMenuItems }}
+              placement="bottomRight"
+              arrow
             >
-              退出登录
-            </Button>
+              <span className={styles.action}>
+                <Space>
+                  <Avatar
+                    src={userInfo?.avatar}
+                    icon={!userInfo?.avatar && <UserOutlined />}
+                  />
+                  <span>{userInfo?.username || 'User'}</span>
+                </Space>
+              </span>
+            </Dropdown>
           </div>
         </Header>
         <Content className={styles.content}>

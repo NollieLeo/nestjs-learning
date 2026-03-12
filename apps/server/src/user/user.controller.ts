@@ -9,6 +9,8 @@ import {
   Put,
   Query,
   UseGuards,
+  Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from './user.service';
@@ -20,11 +22,16 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleEnum } from '@nestjs-learning/shared';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 /**
  * 用户控制器
  * 处理用户相关的 HTTP 请求
  */
+@ApiTags('用户管理 (Admin)')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleEnum.ADMIN)
 @Controller('user')
 export class UserController {
   // private logger = new Logger(UserController.name);
@@ -81,10 +88,14 @@ export class UserController {
    * 根据ID删除用户
    * @param id 用户 ID
    */
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleEnum.ADMIN)
   @Delete(':id')
-  deleteUser(@Param('id', ParseIntPipe) id: number) {
+  deleteUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() req: { user: { id: number } },
+  ) {
+    if (id === req.user.id) {
+      throw new BadRequestException('不能删除当前登录账号');
+    }
     return this.userService.remove(id);
   }
 

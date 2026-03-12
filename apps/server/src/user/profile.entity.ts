@@ -24,21 +24,21 @@ export class Profile {
    * 性别 (0: 未知, 1: 男, 2: 女)
    * @example 1
    */
-  @Column()
+  @Column({ default: 0 })
   gender: number;
 
   /**
    * 头像 URL
    * @example https://example.com/avatar.png
    */
-  @Column()
-  photo: string;
+  @Column({ default: '' })
+  avatar: string;
 
   /**
    * 详细地址
    * @example 浙江省杭州市西湖区
    */
-  @Column()
+  @Column({ default: '' })
   address: string;
 
   /**

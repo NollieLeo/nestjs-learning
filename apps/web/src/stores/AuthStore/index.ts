@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { cookieStorage } from '@/stores/utils';
+import type { AuthUserProfile } from '@nestjs-learning/shared';
 
 interface AuthState {
   token: string | null;
-  userInfo: { id: number; username: string } | null;
+  userInfo: AuthUserProfile | null;
   setToken: (token: string) => void;
-  setUserInfo: (userInfo: { id: number; username: string }) => void;
+  setUserInfo: (userInfo: AuthUserProfile) => void;
   logout: () => void;
 }
 

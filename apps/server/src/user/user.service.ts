@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
+import { Repository, DeepPartial } from 'typeorm';
 import { UserQueryDto } from './dto/user-query.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -117,12 +118,37 @@ export class UserService {
   }
 
   /**
+   * 根据 ID 查询用户并带出密码
+   * @param id - 用户 ID
+   */
+  findUserByIdWithPassword(id: User['id']) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.id = :id', { id })
+      .getOne();
+  }
+
+  /**
+   * 直接更新密码 (供 AuthService 使用)
+   */
+  async updatePasswordRaw(id: number, hashedPassword: string) {
+    return this.userRepository.update(id, { password: hashedPassword });
+  }
+
+  /**
    * 创建新用户
    * @param user - 用户信息
    * @returns 创建的用户（安全返回）
    * @throws ConflictException 用户名已存在
    */
   async create(user: CreateUserDto) {
+    // 确保直接创建的用户密码被正确 hash 加密
+    if (user.password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(user.password, salt);
+    }
+
     const newUser = this.userRepository.create(user);
     const savedUser = await this.userRepository.save(newUser);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -137,12 +163,25 @@ export class UserService {
    * @returns 更新后的用户
    */
   async update(id: User['id'], user: UpdateUserDto) {
-    await this.userRepository.findOneByOrFail({ id });
+    const existingUser = await this.userRepository.findOne({
+      where: { id },
+      relations: ['profile'],
+    });
 
-    await this.userRepository.update(id, user);
+    if (!existingUser) {
+      throw new Error('User not found');
+    }
 
-    // Entity 中默认不查出密码，因此通过 findOne 获取最新关联无需担心密码泄漏
-    return this.userRepository.findOne({ where: { id } });
+    const updatedUser = this.userRepository.merge(
+      existingUser,
+      user as DeepPartial<User>,
+    );
+    await this.userRepository.save(updatedUser);
+
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['profile', 'roles'],
+    });
   }
 
   /**
@@ -166,6 +205,7 @@ export class UserService {
       where: { id },
       relations: {
         profile: true,
+        roles: true,
       },
     });
   }

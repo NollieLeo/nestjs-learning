@@ -54,22 +54,26 @@ api.interceptors.response.use(
     // 捕获 HTTP 错误 (401, 500 等)
     const errRes = error.response?.data;
 
-    // 统一处理 401 登录失效
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      // 移除 zustand 状态和 cookie
-      Cookies.remove('auth-storage', { path: '/' });
-      message.error('登录状态失效，请重新登录');
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 1500);
-      return Promise.reject(error);
-    }
-
     // 其他状态码的错误提示（利用后端返回的标准 message）
     const errorMsg = errRes?.message || error.message || '网络请求失败';
     message.error(errorMsg);
 
-    return Promise.reject(error);
+    if (axios.isAxiosError(error)) {
+      switch (error.response?.status) {
+        // 统一处理 401 登录失效
+        case 401:
+          // 移除 zustand 状态和 cookie
+          Cookies.remove('auth-storage', { path: '/' });
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1000);
+          return Promise.reject(error);
+        default:
+          break;
+      }
+    } else {
+      return Promise.reject(error);
+    }
   },
 );
 

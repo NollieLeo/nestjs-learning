@@ -1,11 +1,5 @@
 import { User } from '../user/user.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 /**
  * 角色实体
@@ -18,7 +12,7 @@ export class Roles {
    * @example 1
    */
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   /**
    * 角色名称
@@ -29,6 +23,5 @@ export class Roles {
 
   /** 拥有该角色的用户列表 */
   @ManyToMany(() => User, (user) => user.roles)
-  @JoinTable()
   users: User[];
 }

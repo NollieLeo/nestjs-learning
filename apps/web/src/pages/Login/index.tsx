@@ -2,7 +2,7 @@ import { useNavigate, Link, useLocation } from 'react-router';
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { login } from '@/services';
+import { login, getProfile } from '@/services';
 import type { LoginRequest } from '@nestjs-learning/shared';
 import { useAuthStore } from '@/stores';
 import styles from './Login.module.scss';
@@ -10,7 +10,7 @@ import styles from './Login.module.scss';
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const setToken = useAuthStore((state) => state.setToken);
+  const { setToken, setUserInfo } = useAuthStore();
 
   // 获取原本想访问的页面，如果没有则默认跳转到首页
   const from = location.state?.from?.pathname || '/';
@@ -19,12 +19,26 @@ export default function Login() {
   const { run: handleLogin, loading } = useRequest(
     async (values: LoginRequest) => {
       const { data } = await login(values);
+      setToken(data.access_token);
+
+      try {
+        const { data: profile } = await getProfile();
+        setUserInfo({
+          id: profile.id,
+          username: profile.username,
+          roles: profile.roles?.map((r) => r.name),
+          avatar: profile.profile?.avatar,
+          gender: profile.profile?.gender,
+        });
+      } catch (err) {
+        console.error('获取用户信息失败', err);
+      }
+
       return data;
     },
     {
       manual: true,
-      onSuccess: (data) => {
-        setToken(data.access_token);
+      onSuccess: () => {
         message.success('登录成功');
         navigate(from, { replace: true });
       },

@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,15 +15,10 @@ export class AuthService {
 
   /**
    * 用户注册
-   * 加密密码后创建用户
    */
   async register(dto: CreateUserDto) {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(dto.password, salt);
-    return this.userService.create({
-      ...dto,
-      password: hashedPassword,
-    });
+    // userService.create 内部已做了密码加密，直接传给它即可
+    return this.userService.create(dto);
   }
 
   /**
@@ -44,14 +40,43 @@ export class AuthService {
   async validateUser(username: string, password: string) {
     const user = await this.userService.findByUsername(username, true);
     if (!user) {
-      throw new UnauthorizedException('用户名或密码错误');
+      throw new BadRequestException('用户名或密码错误');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('用户名或密码错误');
+      throw new BadRequestException('用户名或密码错误');
     }
 
     return user;
+  }
+
+  /**
+   * 修改密码
+   */
+  async updatePassword(userId: number, dto: UpdatePasswordDto) {
+    const user = await this.userService.findUserByIdWithPassword(userId);
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+
+    if (!dto.oldPassword) {
+      throw new BadRequestException('请提供旧密码');
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      dto.oldPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new BadRequestException('旧密码错误');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(dto.newPassword, salt);
+
+    await this.userService.updatePasswordRaw(userId, hashedNewPassword);
+
+    return { success: true };
   }
 }
