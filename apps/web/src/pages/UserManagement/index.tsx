@@ -1,4 +1,4 @@
-import { Table, Space, Button, Tag, Popconfirm, message } from 'antd';
+import { Table, Space, Button, Tag, Popconfirm, message, Avatar } from 'antd';
 import { useAntdTable } from 'ahooks';
 import { getUserList, deleteUser, User } from '@/services';
 import styles from './UserManagement.module.scss';
@@ -6,6 +6,7 @@ import { RoleEnum } from '@nestjs-learning/shared';
 import UserModal from './components/UserModal';
 import { useCrudModal } from '@/hooks/useCrudModal';
 import { useAuthStore } from '@/stores';
+import { UserOutlined } from '@ant-design/icons';
 
 // API 调用适配给 ahooks 的 useAntdTable
 const getTableData = async (
@@ -59,6 +60,17 @@ export default function UserManagement() {
       width: 80,
     },
     {
+      title: '头像',
+      key: 'avatar',
+      width: 80,
+      render: (_: unknown, record: User) => (
+        <Avatar
+          src={record.profile?.avatar}
+          icon={!record.profile?.avatar && <UserOutlined />}
+        />
+      ),
+    },
+    {
       title: '用户名',
       key: 'username',
       render: (_: unknown, record: User) => (
@@ -84,6 +96,17 @@ export default function UserManagement() {
           })}
         </>
       ),
+    },
+    {
+      title: '性别',
+      key: 'gender',
+      width: 80,
+      render: (_: unknown, record: User) => {
+        const gender = record.profile?.gender;
+        if (gender === 1) return <Tag color="blue">男</Tag>;
+        if (gender === 2) return <Tag color="magenta">女</Tag>;
+        return <Tag color="default">保密</Tag>;
+      },
     },
     {
       title: '地址',
