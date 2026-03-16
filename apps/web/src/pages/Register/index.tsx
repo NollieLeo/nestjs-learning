@@ -4,6 +4,10 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { register } from '@/services/auth';
 import type { RegisterRequest } from '@nestjs-learning/shared';
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+} from '@nestjs-learning/shared';
 import styles from './Register.module.scss';
 
 interface RegisterForm {
@@ -41,9 +45,20 @@ export default function Register() {
         <Form onFinish={handleRegister} size="large">
           <Form.Item
             name="username"
-            rules={[{ required: true, message: '请输入用户名' }]}
+            rules={[
+              { required: true, message: '请输入用户名' },
+              {
+                min: USERNAME_MIN_LENGTH,
+                max: USERNAME_MAX_LENGTH,
+                message: `用户名长度必须在 ${USERNAME_MIN_LENGTH} 到 ${USERNAME_MAX_LENGTH} 个字符之间`,
+              },
+            ]}
           >
-            <Input prefix={<UserOutlined />} placeholder="用户名" />
+            <Input
+              prefix={<UserOutlined />}
+              placeholder={`用户名（${USERNAME_MIN_LENGTH}-${USERNAME_MAX_LENGTH}位）`}
+              maxLength={USERNAME_MAX_LENGTH}
+            />
           </Form.Item>
           <Form.Item
             name="password"

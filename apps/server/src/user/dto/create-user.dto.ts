@@ -4,9 +4,16 @@ import {
   IsString,
   MinLength,
   ValidateNested,
+  Length,
 } from 'class-validator';
-import { PASSWORD_MIN_LENGTH, RegisterRequest } from '@nestjs-learning/shared';
-import { Type } from 'class-transformer';
+import {
+  PASSWORD_MIN_LENGTH,
+  RegisterRequest,
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+} from '@nestjs-learning/shared';
+import { Type, Transform } from 'class-transformer';
+import { trimString } from '../../utils/transformer.util';
 
 class RoleIdDto {
   @IsOptional()
@@ -66,6 +73,10 @@ export class CreateUserDto implements RegisterRequest {
    */
   @IsString()
   @IsNotEmpty()
+  @Transform(trimString)
+  @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH, {
+    message: `用户名长度必须在 ${USERNAME_MIN_LENGTH} 到 ${USERNAME_MAX_LENGTH} 个字符之间`,
+  })
   username: string;
 
   /**

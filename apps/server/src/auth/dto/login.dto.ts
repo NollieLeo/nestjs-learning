@@ -1,5 +1,7 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { PASSWORD_MIN_LENGTH, LoginRequest } from '@nestjs-learning/shared';
+import { Transform } from 'class-transformer';
+import { trimString } from '../../utils/transformer.util';
 
 /**
  * 登录 DTO
@@ -11,6 +13,7 @@ export class LoginDto implements LoginRequest {
    */
   @IsString()
   @IsNotEmpty()
+  @Transform(trimString)
   username: string;
 
   /**

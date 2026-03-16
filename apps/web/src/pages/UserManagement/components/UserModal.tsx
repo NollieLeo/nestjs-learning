@@ -6,6 +6,10 @@ import type {
   CreateUserRequest,
   UpdateUserRequest,
 } from '@nestjs-learning/shared';
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+} from '@nestjs-learning/shared';
 import { RegionCascader, RegionValue } from '@/components/RegionCascader';
 import { useRoleOptions } from '@/hooks/useRoleOptions';
 import { buildAddressInfoPayload, extractRegionValue } from '@/utils/address';
@@ -113,9 +117,19 @@ export default function UserModal({
         <Form.Item
           name="username"
           label="用户名"
-          rules={[{ required: true, message: '请输入用户名' }]}
+          rules={[
+            { required: true, message: '请输入用户名' },
+            {
+              min: USERNAME_MIN_LENGTH,
+              max: USERNAME_MAX_LENGTH,
+              message: `用户名长度必须在 ${USERNAME_MIN_LENGTH} 到 ${USERNAME_MAX_LENGTH} 个字符之间`,
+            },
+          ]}
         >
-          <Input placeholder="请输入用户名" />
+          <Input
+            placeholder={`请输入${USERNAME_MIN_LENGTH}-${USERNAME_MAX_LENGTH}位用户名`}
+            maxLength={USERNAME_MAX_LENGTH}
+          />
         </Form.Item>
         {!isEdit && (
           <Form.Item

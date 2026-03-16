@@ -11,6 +11,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { USERNAME_MAX_LENGTH } from '@nestjs-learning/shared';
 import { Profile } from './profile.entity';
 
 /**
@@ -24,7 +25,7 @@ export class User {
   id: number;
 
   /** 用户名（唯一） */
-  @Column({ unique: true })
+  @Column({ unique: true, length: USERNAME_MAX_LENGTH })
   username: string;
 
   /** 密码 */

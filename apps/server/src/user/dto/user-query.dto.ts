@@ -1,6 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
 import type { UserQuery } from '@nestjs-learning/shared';
+import { trimString } from '../../utils/transformer.util';
 
 /**
  * 用户列表查询参数 DTO
@@ -12,6 +14,7 @@ export class UserQueryDto implements UserQuery {
    */
   @IsOptional()
   @IsString()
+  @Transform(trimString)
   keyword?: string;
 
   /**

@@ -4,6 +4,12 @@ export const API_PREFIX = 'api/v1';
 /** 密码最小长度 */
 export const PASSWORD_MIN_LENGTH = 6;
 
+/** 用户名最小长度 */
+export const USERNAME_MIN_LENGTH = 2;
+
+/** 用户名最大长度 */
+export const USERNAME_MAX_LENGTH = 20;
+
 /** 全局 API 响应统一格式 */
 export interface ApiResponse<T = unknown> {
   code: number;
